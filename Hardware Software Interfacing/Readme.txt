@@ -1,0 +1,2 @@
+A Custom made Realtime OS Provided to us by our professor that runs on Linux based Operating system was used to operate these codes.
+STM32F4 was used to work on. Various interfacing was done using this. Linux commands were used to edit compile and run the software on the STM Board.
