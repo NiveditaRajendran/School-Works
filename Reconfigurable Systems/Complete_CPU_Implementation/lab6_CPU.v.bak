@@ -1,0 +1,3 @@
+module lab6_CPU(SW,LED,HEX);
+
+endmodule

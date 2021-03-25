@@ -1,0 +1,92 @@
+// File Name:SHIFTER.v
+// Author : Lisler Thomson Pulikkottil
+// Version: Rev A
+// Description : This program performs various shifting operations depending on a 3 bit select line.
+// Date : 05/31/2019
+
+module SHIFTER(S, CO, HEX0, HEX1, HEX2, F, CI, HSEL);
+
+	input [7:0] F; // INPUT
+	input CI; //CARRY IN
+	input [2:0] HSEL; // SHIFTER FUNCTION SELECT
+	
+	output [7:0] S; // OUTPUT
+	output CO; //CARRY OUT
+	output [6:0] HEX0, HEX1, HEX2; //SEVEN SEGMENT DISPLAYS
+
+	reg [7:0] S;
+	reg [6:0] HEX0, HEX1, HEX2;
+	reg CO;
+	reg [8:0] result; // TEMPORARY VARIABLE
+
+	always @(F or CI or HSEL)
+	begin
+		CO <= 1'b0; // INITIALIZING CARRY OUT
+		case (~HSEL)
+			3'b000: //No Shift
+				begin
+					S <= F;
+					HEX0 <= 7'b0001001; // 'H'
+					HEX1 <= 7'b0010010; // 'S'
+					HEX2 <= 7'b0101011; // 'n'
+				end									
+			3'b001: 	//Shift LEft
+				begin
+					S <= F << 1;
+					HEX0 <= 7'b1000111; // 'L'
+					HEX1 <= 7'b0001001; // 'H'
+					HEX2 <= 7'b0010010; // 'S'
+				end 								
+			3'b010: //Shift Right
+				begin
+					S <= F >> 1;
+					HEX0 <= 7'b0101111; // 'r'
+					HEX1 <= 7'b0001001; // 'H'
+					HEX2 <= 7'b0010010; // 'S'
+				end 									
+			3'b011: //All Zeros
+				begin
+					S <= 8'b0;
+					HEX0 <= 7'b1000000; // '0'
+					HEX1 <= 7'b0111111; // '-'
+					HEX2 <= 7'b0001000; // 'A'
+				end 																			
+			3'b100: //Rotate Left with Carry
+				begin								 	
+					{CO, S} <= F << 1;
+					S[0] = CI;
+					HEX0 <= 7'b1000110; // 'C'
+					HEX1 <= 7'b1000111; // 'L'
+					HEX2 <= 7'b0101111; // 'R'
+				end
+			3'b101://Rotate Left
+				begin                          
+					result <= F << 1;
+					result[0] <= F[7];
+					S <= result[7:0];
+					HEX0 <= 7'b1000111; // 'L'
+					HEX1 <= 7'b1000000; // 'O'
+					HEX2 <= 7'b0101111; // 'R'
+				end
+			3'b110: //Rotate Right
+				begin                      
+					result[0] <= F[0];
+					S <= F >> 1;
+					S[7] <= result[0];
+					HEX0 <= 7'b0101111; // 'R'
+					HEX1 <= 7'b1000000; // 'O'
+					HEX2 <= 7'b0101111; // 'R'
+				end
+			3'b111: // Rotate RIght with Carry
+				begin
+					CO <= F[0];
+					S <= F >> 1;
+					S[7] <= CI;
+					HEX0 <= 7'b1000110; // 'C'
+					HEX1 <= 7'b0101111; // 'R'
+					HEX2 <= 7'b0101111; // 'R'
+				end
+		endcase
+	end
+
+endmodule
